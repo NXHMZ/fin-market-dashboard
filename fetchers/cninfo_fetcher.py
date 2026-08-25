@@ -56,9 +56,9 @@ class CninfoFetcher(BaseFetcher):
 
             ann_id = entry.get("announcementId", "")
             if ann_id and sec_code:
-                href = f"http://www.cninfo.com.cn/new/disclosure/detail?stockCode={sec_code}&announcementId={ann_id}"
+                href = f"https://www.cninfo.com.cn/new/disclosure/detail?stockCode={sec_code}&announcementId={ann_id}"
             elif entry.get("adjunctUrl", ""):
-                href = f"http://www.cninfo.com.cn/{entry['adjunctUrl']}"
+                href = f"https://www.cninfo.com.cn/{entry['adjunctUrl']}"
             else:
                 href = ""
 
