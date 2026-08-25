@@ -51,7 +51,12 @@ class WallstreetcnFetcher(BaseFetcher):
                 continue
 
             uri = entry.get("uri", "")
-            url_str = f"https://wallstreetcn.com/news/global/{uri}" if uri else "https://wallstreetcn.com/"
+            if uri and uri.startswith("http"):
+                url_str = uri
+            elif uri:
+                url_str = f"https://wallstreetcn.com/news/global/{uri}"
+            else:
+                url_str = "https://wallstreetcn.com/"
 
             important = entry.get("is_important", False)
             item = self._make_item(title, content_text, url_str, dt_str)

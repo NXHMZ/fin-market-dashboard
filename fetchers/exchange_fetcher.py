@@ -154,6 +154,7 @@ class ExchangeFetcher(BaseFetcher):
                 if "/disclosure/" in href or "/announcement/" in href:
                     seen.add(title)
                     if not href.startswith("http"):
+                        href = href.replace("../../../", "").replace("../", "").replace("./", "")
                         href = f"https://www.szse.cn{href}" if href.startswith("/") else f"https://www.szse.cn/{href}"
                     pub = self._extract_date_from_url(href) or f"{self._today_str()} 00:00"
                     item = self._make_item(title, "", href, pub)
