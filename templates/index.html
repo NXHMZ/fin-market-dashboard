@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金融市场信息聚合系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="app">
+        <header class="top-bar">
+            <div class="top-left">
+                <div class="logo">
+                    <span class="logo-icon">📊</span>
+                    <span class="logo-text">金融市场信息聚合系统</span>
+                </div>
+                <span class="update-time" id="updateTime">等待数据...</span>
+            </div>
+            <div class="top-right">
+                <div class="auto-refresh">
+                    <span class="refresh-dot" id="refreshDot"></span>
+                    <span id="refreshText">自动刷新中</span>
+                </div>
+                <button class="btn-refresh" onclick="manualRefresh()">手动刷新</button>
+            </div>
+        </header>
+
+        <div class="status-bar" id="statusBar">
+        </div>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="panel">
+                    <h3 class="panel-title">热度等级</h3>
+                    <div class="heat-legend" id="heatLegend"></div>
+                </div>
+
+                <div class="panel">
+                    <h3 class="panel-title">数据源筛选</h3>
+                    <div class="source-filters" id="sourceFilters"></div>
+                </div>
+
+                <div class="panel">
+                    <h3 class="panel-title">搜索</h3>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="输入关键词搜索..." oninput="handleSearch()">
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3 class="panel-title">热门关键词</h3>
+                    <div class="keyword-cloud" id="keywordCloud">
+                        <span class="kw-empty">暂无数据</span>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3 class="panel-title">统计</h3>
+                    <div class="stats" id="statsPanel">
+                        <div class="stat-item">
+                            <span class="stat-label">总条数</span>
+                            <span class="stat-value" id="statTotal">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">正常源</span>
+                            <span class="stat-value" id="statSources">0/0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">爆热</span>
+                            <span class="stat-value" id="statScorching">0</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="content-right">
+                <div class="tab-bar">
+                    <div class="tab active" id="tabHeat" onclick="switchTab('heat')">
+                        <span class="tab-icon">🔥</span> 热度排序
+                    </div>
+                    <div class="tab" id="tabTime" onclick="switchTab('time')">
+                        <span class="tab-icon">🕐</span> 时间排序
+                    </div>
+                    <div class="tab" id="tabCninfo" onclick="switchTab('cninfo')">
+                        <span class="tab-icon">📋</span> 巨潮公告
+                    </div>
+                </div>
+                <main class="news-feed" id="newsFeed">
+                    <div class="loading-screen">
+                        <div class="loader"></div>
+                        <p>正在从各数据源获取最新金融市场信息...</p>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <span>金融市场信息聚合系统 | 数据源: 财联社 · 金十数据 · 华尔街见闻 · 巨潮资讯网 · 交易所 · 证监会 · 三大证券报</span>
+            <span class="refresh-interval">刷新间隔: 30秒</span>
+        </footer>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
