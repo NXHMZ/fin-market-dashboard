@@ -42,6 +42,7 @@ jobs:
         run: |
           mkdir -p pages
           cp dashboard.html pages/index.html
+          if [ -f CNAME ]; then cp CNAME pages/CNAME; fi
 
       - name: 配置 Pages
         uses: actions/configure-pages@v4
