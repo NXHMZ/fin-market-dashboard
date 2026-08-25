@@ -2,7 +2,7 @@ name: 采集数据并部署
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/5 * * * *'
   push:
     branches: [ main ]
   workflow_dispatch:
