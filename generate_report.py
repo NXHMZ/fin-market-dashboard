@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import threading
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -94,7 +94,7 @@ def generate_html(items, source_status, keyword_stats):
         "source_status": source_status,
         "keywords": keyword_stats,
         "heat_levels": heat_meta,
-        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_at": datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S"),
     }, ensure_ascii=False, default=str)
 
     html_template = '''<!DOCTYPE html>
@@ -355,7 +355,7 @@ if __name__ == "__main__":
 
     ok_count = sum(1 for v in source_status.values() if v["status"] == "ok")
     print(f"\n  获取完成: {len(items)} 条信息, {ok_count}/{len(fetcher_instances)} 源正常")
-    print(f"  生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"  生成时间: {datetime.now(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')}")
 
     output_path = generate_html(items, source_status, keyword_stats)
 

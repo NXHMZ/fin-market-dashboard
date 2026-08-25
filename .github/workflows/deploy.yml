@@ -36,6 +36,7 @@ jobs:
         run: python generate_report.py
         env:
           PYTHONWARNINGS: ignore
+          TZ: Asia/Shanghai
 
       - name: 准备 Pages 文件
         run: |
