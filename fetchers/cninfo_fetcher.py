@@ -54,8 +54,13 @@ class CninfoFetcher(BaseFetcher):
             sec_code = entry.get("secCode", "")
             prefix = f"[{sec_name}{sec_code}] " if sec_name else ""
 
-            adjunct_url = entry.get("adjunctUrl", "")
-            href = f"http://www.cninfo.com.cn/{adjunct_url}" if adjunct_url else ""
+            ann_id = entry.get("announcementId", "")
+            if ann_id and sec_code:
+                href = f"http://www.cninfo.com.cn/new/disclosure/detail?stockCode={sec_code}&announcementId={ann_id}"
+            elif entry.get("adjunctUrl", ""):
+                href = f"http://www.cninfo.com.cn/{entry['adjunctUrl']}"
+            else:
+                href = ""
 
             ann_time = entry.get("announcementTime", "")
             dt_str = ""
