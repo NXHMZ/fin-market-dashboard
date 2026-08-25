@@ -308,7 +308,7 @@ function renderNews(){
         if(item.published)f+='<span class="time-tag">🕒 '+item.published+'</span>';
         if(item.heat_keywords)for(const kw of item.heat_keywords.slice(0,5))f+='<span class="kw-tag-small">'+kw+'</span>';
         f+='</div>';
-        const titleHtml=item.url?'<a href="'+item.url+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">'+escapeHtml(item.title)+'</a>':escapeHtml(item.title);
+        const titleHtml=item.url?'<a href="'+item.url+'" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer" style="color:inherit;text-decoration:none">'+escapeHtml(item.title)+'</a>':escapeHtml(item.title);
         card.innerHTML='<div class="heat-section"><div class="heat-badge-large" style="background:'+hc+'">'+hl+'</div><div class="heat-score">'+(item.heat_score||0)+'分</div></div><div class="content-section">'+h+'<div class="title">'+titleHtml+'</div>'+(item.content?'<div class="content">'+escapeHtml(item.content)+'</div>':"")+f+'</div>';
         feed.appendChild(card);
     }

@@ -250,7 +250,7 @@ function createNewsCard(item) {
     footerHtml += `</div>`;
 
     const titleHtml = item.url
-        ? `<a href="${item.url}" target="_blank" rel="noopener"
+        ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"
              style="color:inherit;text-decoration:none">${escapeHtml(item.title)}</a>`
         : escapeHtml(item.title);
 
