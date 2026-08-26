@@ -6,3 +6,4 @@ __pycache__/
 venv/
 .venv/
 dashboard.html
+heat_history.json

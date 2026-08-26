@@ -254,10 +254,24 @@ function createNewsCard(item) {
              style="color:inherit;text-decoration:none">${escapeHtml(item.title)}</a>`
         : escapeHtml(item.title);
 
+    const trend = item.heat_trend || "same";
+    const delta = item.heat_delta || 0;
+    let trendHtml = "";
+    if (trend === "up") {
+        trendHtml = `<span class="trend-up" title="热度上升 +${delta}">↑${delta > 0 ? delta : ""}</span>`;
+    } else if (trend === "down") {
+        trendHtml = `<span class="trend-down" title="热度下降 -${delta}">↓${delta > 0 ? delta : ""}</span>`;
+    } else if (trend === "new") {
+        trendHtml = `<span class="trend-new" title="新信息">NEW</span>`;
+    } else {
+        trendHtml = `<span class="trend-same" title="热度不变">→</span>`;
+    }
+
     card.innerHTML = `
         <div class="heat-section">
             <div class="heat-badge-large" style="background:${heatColor}">${heatLabel}</div>
             <div class="heat-score">${item.heat_score || 0}分</div>
+            ${trendHtml}
         </div>
         <div class="content-section">
             ${headerHtml}

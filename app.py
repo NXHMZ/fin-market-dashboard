@@ -46,6 +46,8 @@ cache = {
     "source_counts": {},
 }
 
+prev_heat_scores = {}
+
 
 def fetch_all_sources():
     all_items = []
@@ -99,6 +101,28 @@ def fetch_all_sources():
 
     all_items.sort(key=lambda x: x.get("heat_score", 0), reverse=True)
     all_items = all_items[:MAX_TOTAL_ITEMS]
+
+    global prev_heat_scores
+    new_heat_scores = {}
+    for item in all_items:
+        key = item.get("source_id", "") + "|" + item.get("title", "")[:80]
+        cur_score = item.get("heat_score", 0)
+        if key in prev_heat_scores:
+            prev = prev_heat_scores[key]
+            if cur_score > prev:
+                item["heat_trend"] = "up"
+                item["heat_delta"] = round(cur_score - prev, 1)
+            elif cur_score < prev:
+                item["heat_trend"] = "down"
+                item["heat_delta"] = round(prev - cur_score, 1)
+            else:
+                item["heat_trend"] = "same"
+                item["heat_delta"] = 0
+        else:
+            item["heat_trend"] = "new"
+            item["heat_delta"] = 0
+        new_heat_scores[key] = cur_score
+    prev_heat_scores = new_heat_scores
 
     keyword_stats = heat_engine.compute_keyword_stats(all_items)
 

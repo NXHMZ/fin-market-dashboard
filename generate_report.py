@@ -18,6 +18,7 @@ from fetchers.csrc_fetcher import CSRCFetcher
 from fetchers.securities_fetcher import SecuritiesFetcher
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+HEAT_HISTORY_FILE = os.path.join(BASE_DIR, "heat_history.json")
 
 heat_engine = HeatEngine()
 
@@ -80,6 +81,40 @@ def fetch_all_sources():
 
     all_items.sort(key=lambda x: x.get("heat_score", 0), reverse=True)
     all_items = all_items[:MAX_TOTAL_ITEMS]
+
+    prev_scores = {}
+    if os.path.exists(HEAT_HISTORY_FILE):
+        try:
+            with open(HEAT_HISTORY_FILE, "r", encoding="utf-8") as f:
+                prev_scores = json.load(f)
+        except Exception:
+            prev_scores = {}
+
+    new_scores = {}
+    for item in all_items:
+        key = item.get("source_id", "") + "|" + item.get("title", "")[:80]
+        cur = item.get("heat_score", 0)
+        if key in prev_scores:
+            p = prev_scores[key]
+            if cur > p:
+                item["heat_trend"] = "up"
+                item["heat_delta"] = round(cur - p, 1)
+            elif cur < p:
+                item["heat_trend"] = "down"
+                item["heat_delta"] = round(p - cur, 1)
+            else:
+                item["heat_trend"] = "same"
+                item["heat_delta"] = 0
+        else:
+            item["heat_trend"] = "new"
+            item["heat_delta"] = 0
+        new_scores[key] = cur
+
+    try:
+        with open(HEAT_HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(new_scores, f, ensure_ascii=False)
+    except Exception:
+        pass
 
     keyword_stats = heat_engine.compute_keyword_stats(all_items)
 
@@ -167,6 +202,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 .news-card .heat-section{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:56px}
 .news-card .heat-badge-large{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
 .news-card .heat-score{font-size:11px;color:var(--text-muted);font-weight:600}
+.news-card .trend-up{font-size:13px;font-weight:700;color:#ff4757;line-height:1}
+.news-card .trend-down{font-size:13px;font-weight:700;color:#2ed573;line-height:1}
+.news-card .trend-same{font-size:13px;font-weight:600;color:var(--text-muted);line-height:1}
+.news-card .trend-new{font-size:9px;font-weight:700;color:#2f81f7;background:rgba(47,129,247,0.15);padding:1px 5px;border-radius:4px;line-height:1.3}
 .news-card .content-section{flex:1;min-width:0}
 .news-card .card-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .news-card .source-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;color:#fff}
@@ -309,7 +348,13 @@ function renderNews(){
         if(item.heat_keywords)for(const kw of item.heat_keywords.slice(0,5))f+='<span class="kw-tag-small">'+kw+'</span>';
         f+='</div>';
         const titleHtml=item.url?'<a href="'+item.url+'" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer" style="color:inherit;text-decoration:none">'+escapeHtml(item.title)+'</a>':escapeHtml(item.title);
-        card.innerHTML='<div class="heat-section"><div class="heat-badge-large" style="background:'+hc+'">'+hl+'</div><div class="heat-score">'+(item.heat_score||0)+'分</div></div><div class="content-section">'+h+'<div class="title">'+titleHtml+'</div>'+(item.content?'<div class="content">'+escapeHtml(item.content)+'</div>':"")+f+'</div>';
+        const tr=item.heat_trend||"same";const dl=item.heat_delta||0;
+        let th="";
+        if(tr==="up")th='<span class="trend-up" title="热度上升 +'+dl+'">↑'+(dl>0?dl:"")+'</span>';
+        else if(tr==="down")th='<span class="trend-down" title="热度下降 -'+dl+'">↓'+(dl>0?dl:"")+'</span>';
+        else if(tr==="new")th='<span class="trend-new" title="新信息">NEW</span>';
+        else th='<span class="trend-same" title="热度不变">→</span>';
+        card.innerHTML='<div class="heat-section"><div class="heat-badge-large" style="background:'+hc+'">'+hl+'</div><div class="heat-score">'+(item.heat_score||0)+'分</div>'+th+'</div><div class="content-section">'+h+'<div class="title">'+titleHtml+'</div>'+(item.content?'<div class="content">'+escapeHtml(item.content)+'</div>':"")+f+'</div>';
         feed.appendChild(card);
     }
 }

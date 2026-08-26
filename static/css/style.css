@@ -531,6 +531,37 @@ body {
     font-weight: 600;
 }
 
+.news-card .trend-up {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ff4757;
+    line-height: 1;
+}
+
+.news-card .trend-down {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2ed573;
+    line-height: 1;
+}
+
+.news-card .trend-same {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1;
+}
+
+.news-card .trend-new {
+    font-size: 9px;
+    font-weight: 700;
+    color: #2f81f7;
+    background: rgba(47, 129, 247, 0.15);
+    padding: 1px 5px;
+    border-radius: 4px;
+    line-height: 1.3;
+}
+
 .news-card .content-section {
     flex: 1;
     min-width: 0;
