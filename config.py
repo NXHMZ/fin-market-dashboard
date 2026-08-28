@@ -137,3 +137,33 @@ HEAT_KEYWORDS = {
 
 MAX_ITEMS_PER_SOURCE = 30
 MAX_TOTAL_ITEMS = 200
+
+SOURCE_TIERS = {
+    "realtime": {
+        "sources": ["cls", "jin10", "wallstreetcn"],
+        "interval": 10,
+        "label": "实时快讯",
+    },
+    "standard": {
+        "sources": ["csrc", "sse", "szse", "cninfo"],
+        "interval": 30,
+        "label": "监管公告",
+    },
+    "periodic": {
+        "sources": ["cs", "cnstock", "stcn"],
+        "interval": 60,
+        "label": "证券报",
+    },
+}
+
+DEDUP_TITLE_THRESHOLD = 0.75
+
+BREAKING_NEWS_THRESHOLD = 60
+BREAKING_NEWS_MAX_AGE_SECONDS = 300
+
+BREAKING_KEYWORDS = [
+    "突发", "紧急", "快讯", "刚刚", "最新", "独家", "获悉",
+    "涨停", "跌停", "暴雷", "退市", "立案", "熔断", "崩盘",
+    "暴跌", "暴涨", "降息", "加息", "降准", "停牌", "复牌",
+    "重大", "重组", "并购", "收购", "合并",
+]

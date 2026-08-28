@@ -4,6 +4,8 @@ let currentSort = "heat";
 let searchQuery = "";
 let heatLevels = {};
 let refreshTimer = null;
+let sseConnected = false;
+let breakingHistory = [];
 
 const HEAT_LEVEL_ORDER = ["scorching", "hot", "warm", "cool", "cold"];
 
@@ -13,7 +15,104 @@ async function init() {
     await loadStatus();
     await loadNews();
     await loadKeywords();
+    await loadBreaking();
     startAutoRefresh();
+    initSSE();
+}
+
+function initSSE() {
+    const evtSource = new EventSource("/api/stream");
+
+    evtSource.addEventListener("connected", () => {
+        sseConnected = true;
+        console.log("[SSE] Connected");
+    });
+
+    evtSource.onmessage = (event) => {
+        try {
+            const msg = JSON.parse(event.data);
+            if (msg.type === "breaking") {
+                showBreaking(msg.data);
+                loadBreaking();
+            } else if (msg.type === "update") {
+                console.log(`[SSE] Update: ${msg.data.tier} +${msg.data.new_count} (${msg.data.breaking_count} breaking)`);
+                loadStatus();
+                loadNews();
+                loadKeywords();
+            }
+        } catch (e) {
+            console.log("[SSE] Heartbeat");
+        }
+    };
+
+    evtSource.onerror = () => {
+        sseConnected = false;
+        console.log("[SSE] Disconnected, retrying...");
+    };
+}
+
+function showBreaking(data) {
+    const banner = document.getElementById("breakingBanner");
+    const text = document.getElementById("breakingText");
+    text.innerHTML = `<strong>[${data.source}]</strong> ${escapeHtml(data.title)}`;
+    banner.style.display = "flex";
+    banner.onclick = () => {
+        if (data.url) window.open(data.url, "_blank");
+    };
+    setTimeout(() => {
+        banner.style.display = "none";
+    }, 15000);
+}
+
+function closeBreaking() {
+    event.stopPropagation();
+    document.getElementById("breakingBanner").style.display = "none";
+}
+
+async function loadBreaking() {
+    try {
+        const res = await fetch("/api/breaking");
+        const data = await res.json();
+        breakingHistory = data.items || [];
+        renderBreakingHistory();
+    } catch (e) {
+        console.error("Failed to load breaking news:", e);
+    }
+}
+
+function renderBreakingHistory() {
+    const container = document.getElementById("breakingHistory");
+    const list = document.getElementById("breakingHistoryList");
+    const count = document.getElementById("breakingCount");
+
+    if (breakingHistory.length === 0) {
+        container.style.display = "none";
+        return;
+    }
+
+    container.style.display = "block";
+    count.textContent = breakingHistory.length;
+
+    list.innerHTML = "";
+    for (const item of breakingHistory.slice(-20).reverse()) {
+        const div = document.createElement("div");
+        div.className = "breaking-item";
+        const time = (item.published || "").slice(11, 16) || "--:--";
+        const url = item.url ? `href="${item.url}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"` : "";
+        div.innerHTML = `
+            <span class="breaking-item-source">${item.source_name || ""}</span>
+            <span class="breaking-item-title"><a ${url}>${escapeHtml(item.title || "")}</a></span>
+            <span class="breaking-item-time">${time}</span>
+        `;
+        list.appendChild(div);
+    }
+}
+
+function toggleBreakingHistory() {
+    const list = document.getElementById("breakingHistoryList");
+    const icon = document.getElementById("breakingToggle");
+    list.classList.toggle("expanded");
+    icon.textContent = list.classList.contains("expanded") ? "▲" : "▼";
 }
 
 async function loadHeatLevels() {
@@ -351,7 +450,7 @@ function startAutoRefresh() {
         await loadStatus();
         await loadNews();
         await loadKeywords();
-    }, 30000);
+    }, 10000);
 }
 
 init();

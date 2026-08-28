@@ -28,6 +28,24 @@
         <div class="status-bar" id="statusBar">
         </div>
 
+        <div id="breakingBanner" class="breaking-banner" style="display:none;">
+            <div class="breaking-icon">⚡</div>
+            <div class="breaking-content">
+                <div class="breaking-label">突发</div>
+                <div class="breaking-text" id="breakingText"></div>
+            </div>
+            <div class="breaking-close" onclick="closeBreaking()">✕</div>
+        </div>
+
+        <div id="breakingHistory" class="breaking-history" style="display:none;">
+            <div class="breaking-history-header" onclick="toggleBreakingHistory()">
+                <span>⚡ 突发新闻历史</span>
+                <span class="breaking-count" id="breakingCount">0</span>
+                <span class="toggle-icon" id="breakingToggle">▼</span>
+            </div>
+            <div class="breaking-history-list" id="breakingHistoryList"></div>
+        </div>
+
         <div class="main-content">
             <aside class="sidebar">
                 <div class="panel">
@@ -96,7 +114,7 @@
 
         <footer class="footer">
             <span>金融市场信息聚合系统 | 数据源: 财联社 · 金十数据 · 华尔街见闻 · 巨潮资讯网 · 交易所 · 证监会 · 三大证券报</span>
-            <span class="refresh-interval">刷新间隔: 30秒</span>
+            <span class="refresh-interval">分级轮询: 实时源10s · 监管源30s · 证券报60s</span>
         </footer>
     </div>
 
